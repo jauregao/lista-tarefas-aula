@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Comments } from "../components/Comments";
+import { NewComment } from "../components/NewComment";
+import { fetchPostById } from "../services/postService";
 
 export function Post() {
   const { id } = useParams();
@@ -20,15 +23,10 @@ export function Post() {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`);
-        
-        if (!response.ok) {
-          throw new Error('Erro ao buscar o post');
-        }
-        
-        const data = await response.json();
+        const data = await fetchPostById(id);
         setPost(data);
       } catch (err) {
+        console.error(err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -52,17 +50,21 @@ export function Post() {
 
   return (
     <main>
-      {loading && <p>Carregando post...</p>}
-      {error && <p>Erro: {error}</p>}
+      {error && <p>Desculpe, tivemos um erro: {error}</p>}
       {!loading && !error && post && (
-        <article>
-          {ref && <p>Referência: {ref}</p>}
-          {nome && <p>Nome: {nome}</p>}
-          <h3>{post.id}</h3>
-          <h3>{post.title}</h3>
-          <p>{post.body}</p>
-          <button type="button" onClick={voltar}>Voltar</button>
-        </article>
+        <>
+          <article>
+            {ref && <p>Referência: {ref}</p>}
+            {nome && <p>Nome: {nome}</p>}
+            <h3>{post.id}</h3>
+            <h3>{post.title}</h3>
+            <p>{post.body}</p>
+            <button type="button" onClick={voltar}>Voltar</button>
+          </article>
+
+          <NewComment/>
+          <Comments id={post.id}/>
+        </>
       )}
     </main>
   );

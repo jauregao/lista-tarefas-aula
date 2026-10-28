@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchAllPosts } from '../services/postService';
 
 export function Posts() {
     const navigate = useNavigate();
@@ -13,13 +14,8 @@ export function Posts() {
     // Função assíncrona para buscar os dados
     const fetchPosts = async () => {
       try {
-        const response = await fetch('https://jsonplaceholder.typicode.com/posts');
-        if (!response.ok) {
-          throw new Error('Erro ao buscar os posts');
-        }
-        
-        const data = await response.json();
-        setPosts(data.slice(0, 10)); 
+        const posts = await fetchAllPosts();
+        setPosts(posts);
       } catch (err) {
         setError(err.message);
       } finally {
